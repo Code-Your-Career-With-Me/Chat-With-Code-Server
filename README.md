@@ -1,83 +1,75 @@
-📄 Chat with Code — Server (API) README
-Date: 2025-08-12
+# 📄 Chat with Code — Server (API)
 
-A TypeScript Node.js/Express backend for Chat with Code, a random one-to-one video/audio chat web app with live text, room system, and realtime presence via Socket.IO.
-Auth (email/OTP or email/password) and session data are stored in MongoDB. WebRTC signaling is handled over Socket.IO.
+**Date:** 2025-08-12
 
-This repo is the server half of a MERN stack project (MongoDB, Express, React, Node).
-The client (React + Vite + Tailwind + TS) lives in a separate repo.
+A **TypeScript Node.js/Express** backend for **Chat with Code**, a random one-to-one video/audio chat web app with live text, a room system, and realtime presence via **Socket.IO**.  
+Authentication (email/OTP or email/password) and session data are stored in **MongoDB**.  
+WebRTC signaling is handled over **Socket.IO**.
 
-🛠 Tech Stack
-Node.js + Express (TypeScript)
+> This repository contains the **server** half of the MERN stack project (MongoDB, Express, React, Node).  
+> The **client** (React + Vite + Tailwind + TypeScript) lives in a separate repository.
 
-Socket.IO (signaling, presence, matchmaking)
+---
 
-MongoDB + Mongoose
+## 🛠 Tech Stack
 
-JWT auth (HTTP + Socket handshake)
+- **Node.js** + **Express** (TypeScript)
+- **Socket.IO** (signaling, presence, matchmaking)
+- **MongoDB** + **Mongoose**
+- **JWT** authentication (HTTP + Socket handshake)
+- **Zod** for validation
+- **dotenv** for configuration
+- **Helmet**, **CORS**, **rate-limit**, **hpp**, **express-mongo-sanitize** for security
+- **Winston/Pino** logging
+- **Vitest** / **Jest** (choose one) + **Supertest** for testing
+- **ts-node-dev** for development, **tsc** for builds
+- *(Optional)* **BullMQ/Redis** (email OTP queue), **Nodemailer** (SMTP)
 
-Zod for validation
+---
 
-dotenv for configuration
+## ✨ Features
 
-Helmet, CORS, rate-limit, hpp, express-mongo-sanitize for security
+- User account creation & login (email/password; OTP optional)
+- JWT access & refresh tokens
+- User profile & preferences (age gate, interests/tags, mic/cam defaults)
+- **Realtime matchmaking** (random & interest-based)
+- **Rooms API** (private/public, re-match/skip/next)
+- **WebRTC signaling** over Socket.IO (offer/answer/ICE)
+- Live text chat within rooms
+- Presence tracking (online/offline, typing, reconnects)
+- Moderation tools (block/report endpoints, room end reasons)
+- Optional audit logs
 
-Winston/Pino logging
+---
 
-Vitest/Jest (pick one), Supertest for tests
+## 🚀 Getting Started
 
-ts-node-dev for dev, tsc for builds
+### 📋 Prerequisites
 
-Optional: BullMQ/Redis (email OTP queue), Nodemailer (SMTP)
+- **Node.js** v20+
+- **MongoDB** v6+ (Atlas or local)
+- *(Optional)* **Redis** v7+ (for queues/rate-limiting at scale)
 
-✨ Features
-Account creation & login (email/password; OTP optional)
+---
 
-JWT access & refresh tokens
+### 📥 Installation
 
-Profile & preferences (age gate, interests/tags, mic/cam defaults)
-
-Realtime Matchmaking (random & interest-based)
-
-Rooms API (private/public, re-match/skip/next)
-
-WebRTC Signaling over Socket.IO (offer/answer/ice)
-
-Live Text Chat within a room
-
-Presence (online/offline, typing, reconnects)
-
-Moderation hooks (block/report endpoints, room end reasons)
-
-Audit logs (optional)
-
-🚀 Getting Started
-Prerequisites
-Node.js 20+
-
-MongoDB 6+ (Atlas or local)
-
-(Optional) Redis 7+ (for queues/rate-limits at scale)
-
-Install
-bash
-Copy
-Edit
+```bash
 git clone https://github.com/your-org/chat-with-code-server.git
 cd chat-with-code-server
-pnpm i  # or npm i / yarn
-Env Setup
-Create .env:
+pnpm install    # or npm install / yarn install
 
-env
-Copy
-Edit
+
+⚙️ Environment Variables
+Create a .env file in the root directory:
+
+
 # Server
 NODE_ENV=development
 PORT=8080
 CORS_ORIGIN=http://localhost:5173
 
-# Mongo
+# MongoDB
 MONGODB_URI=mongodb://127.0.0.1:27017/chatwithcode
 
 # JWT
@@ -98,20 +90,18 @@ REDIS_URL=redis://127.0.0.1:6379
 
 # Logging
 LOG_LEVEL=info
-Scripts
-bash
-Copy
-Edit
-pnpm dev       # run with ts-node-dev + reload
-pnpm build     # tsc build to /dist
-pnpm start     # run compiled server
-pnpm test      # unit/integration tests
-pnpm lint      # eslint
-pnpm format    # prettier
+
+
+📜 Scripts
+pnpm dev       # Run with ts-node-dev + reload
+pnpm build     # Compile TypeScript to /dist
+pnpm start     # Run compiled server
+pnpm test      # Run unit/integration tests
+pnpm lint      # Run ESLint checks
+pnpm format    # Format code with Prettier
+
+
 📂 Project Structure
-arduino
-Copy
-Edit
 src/
   app.ts
   index.ts
@@ -125,62 +115,86 @@ src/
   utils/
   validations/
 tests/
+
+
+
 🔌 API Overview
 Base URL: http://localhost:8080/api
 
 Auth
+POST /api/auth/register — Create a new account
 
-POST /api/auth/register
+POST /api/auth/login — Login with email/password
 
-POST /api/auth/login
+POST /api/auth/refresh — Refresh JWT token
 
-POST /api/auth/refresh
-
-POST /api/auth/logout
+POST /api/auth/logout — Logout and invalidate token
 
 Users
+GET /api/users/me — Get logged-in user details
 
-GET /api/users/me
+PATCH /api/users/me — Update profile
 
-PATCH /api/users/me
-
-POST /api/users/block
+POST /api/users/block — Block another user
 
 Matchmaking & Rooms
+POST /api/match/find — Start matchmaking
 
-POST /api/match/find
+POST /api/match/cancel — Cancel matchmaking
 
-POST /api/match/cancel
+POST /api/rooms/:roomId/end — End a room
 
-POST /api/rooms/:roomId/end
+
 
 📡 Socket.IO Events
 Client → Server
 
-match:find, room:signal:offer, etc.
+match:find
+
+match:cancel
+
+room:signal:offer
+
+room:signal:answer
+
+room:signal:ice
+
+room:message
 
 Server → Client
 
-match:found, room:ready, etc.
+match:found
+
+match:timeout
+
+room:ready
+
+room:ended
+
+room:message
 
 🛡 Security
-Helmet, CORS, JWT rotation
+Helmet for HTTP headers
 
-Socket auth guard
+CORS origin restrictions
 
-Rate limits
+JWT rotation for sessions
+
+Socket.IO authentication middleware
+
+Rate-limiting for sensitive endpoints
 
 🧪 Testing
-Unit & Integration with Vitest/Jest
+Unit Tests: Vitest/Jest
 
-Socket tests with socket.io-client
+Integration Tests: Supertest
+
+Socket Tests: socket.io-client
 
 🚢 Deployment
-Dockerfile + docker-compose
+Dockerfile + docker-compose setup
 
-PM2/systemd
+PM2 or systemd process management
 
-HTTPS via Nginx/Caddy
+HTTPS via Nginx or Caddy
 
-📜 License
-MIT (or your choice).
