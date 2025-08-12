@@ -58,12 +58,15 @@ WebRTC signaling is handled over **Socket.IO**.
 git clone https://github.com/your-org/chat-with-code-server.git
 cd chat-with-code-server
 pnpm install    # or npm install / yarn install
+```
 
+---
 
-⚙️ Environment Variables
-Create a .env file in the root directory:
+### ⚙️ Environment Variables
 
+Create a `.env` file in the root directory:
 
+```env
 # Server
 NODE_ENV=development
 PORT=8080
@@ -90,18 +93,26 @@ REDIS_URL=redis://127.0.0.1:6379
 
 # Logging
 LOG_LEVEL=info
+```
 
+---
 
-📜 Scripts
+### 📜 Scripts
+
+```bash
 pnpm dev       # Run with ts-node-dev + reload
 pnpm build     # Compile TypeScript to /dist
 pnpm start     # Run compiled server
 pnpm test      # Run unit/integration tests
 pnpm lint      # Run ESLint checks
 pnpm format    # Format code with Prettier
+```
 
+---
 
-📂 Project Structure
+## 📂 Project Structure
+
+```plaintext
 src/
   app.ts
   index.ts
@@ -115,86 +126,78 @@ src/
   utils/
   validations/
 tests/
+```
 
+---
 
+## 🔌 API Overview
 
-🔌 API Overview
-Base URL: http://localhost:8080/api
+**Base URL:** `http://localhost:8080/api`
 
-Auth
-POST /api/auth/register — Create a new account
+### **Auth**
+- `POST /api/auth/register` — Create a new account
+- `POST /api/auth/login` — Login with email/password
+- `POST /api/auth/refresh` — Refresh JWT token
+- `POST /api/auth/logout` — Logout and invalidate token
 
-POST /api/auth/login — Login with email/password
+### **Users**
+- `GET /api/users/me` — Get logged-in user details
+- `PATCH /api/users/me` — Update profile
+- `POST /api/users/block` — Block another user
 
-POST /api/auth/refresh — Refresh JWT token
+### **Matchmaking & Rooms**
+- `POST /api/match/find` — Start matchmaking
+- `POST /api/match/cancel` — Cancel matchmaking
+- `POST /api/rooms/:roomId/end` — End a room
 
-POST /api/auth/logout — Logout and invalidate token
+---
 
-Users
-GET /api/users/me — Get logged-in user details
+## 📡 Socket.IO Events
 
-PATCH /api/users/me — Update profile
+### **Client → Server**
+- `match:find`
+- `match:cancel`
+- `room:signal:offer`
+- `room:signal:answer`
+- `room:signal:ice`
+- `room:message`
 
-POST /api/users/block — Block another user
+### **Server → Client**
+- `match:found`
+- `match:timeout`
+- `room:ready`
+- `room:ended`
+- `room:message`
 
-Matchmaking & Rooms
-POST /api/match/find — Start matchmaking
+---
 
-POST /api/match/cancel — Cancel matchmaking
+## 🛡 Security
 
-POST /api/rooms/:roomId/end — End a room
+- **Helmet** for HTTP headers
+- **CORS** origin restrictions
+- **JWT** rotation for sessions
+- **Socket.IO** authentication middleware
+- **Rate-limiting** for sensitive endpoints
 
+---
 
+## 🧪 Testing
 
-📡 Socket.IO Events
-Client → Server
+- **Unit Tests**: Vitest or Jest
+- **Integration Tests**: Supertest
+- **Socket Tests**: socket.io-client
 
-match:find
+---
 
-match:cancel
+## 🚢 Deployment
 
-room:signal:offer
+- Dockerfile + docker-compose setup
+- PM2 or systemd process management
+- HTTPS via Nginx or Caddy
 
-room:signal:answer
+---
 
-room:signal:ice
+## 📜 License
 
-room:message
-
-Server → Client
-
-match:found
-
-match:timeout
-
-room:ready
-
-room:ended
-
-room:message
-
-🛡 Security
-Helmet for HTTP headers
-
-CORS origin restrictions
-
-JWT rotation for sessions
-
-Socket.IO authentication middleware
-
-Rate-limiting for sensitive endpoints
-
-🧪 Testing
-Unit Tests: Vitest/Jest
-
-Integration Tests: Supertest
-
-Socket Tests: socket.io-client
-
-🚢 Deployment
-Dockerfile + docker-compose setup
-
-PM2 or systemd process management
-
-HTTPS via Nginx or Caddy
+MIT (or your choice)
 
